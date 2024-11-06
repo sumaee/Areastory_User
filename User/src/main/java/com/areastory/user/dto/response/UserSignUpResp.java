@@ -1,6 +1,6 @@
 package com.areastory.user.dto.response;
 
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class UserSignUpResp {
     private Long userId;
     private String hashKey;
 
-    public static UserSignUpResp fromEntity(User user) {
+    public static UserSignUpResp fromEntity(UserInfo user) {
         return UserSignUpResp.builder()
                 .userId(user.getUserId())
                 .hashKey(user.getHashKey())

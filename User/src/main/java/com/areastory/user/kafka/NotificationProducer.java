@@ -1,7 +1,7 @@
 package com.areastory.user.kafka;
 
 import com.areastory.user.db.entity.Follow;
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.dto.common.NotificationKafkaDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,8 +14,8 @@ public class NotificationProducer {
     private final KafkaTemplate<Long, NotificationKafkaDto> kafkaTemplate;
 
     public void send(Follow follow) {
-        User followerUser = follow.getFollowerUser();
-        User followingUser = follow.getFollowingUser();
+        UserInfo followerUser = follow.getFollowerUser();
+        UserInfo followingUser = follow.getFollowingUser();
         NotificationKafkaDto followNotificationKafkaDto = NotificationKafkaDto.builder()
                 .type(KafkaProperties.FOLLOW)
                 .userId(followingUser.getUserId())

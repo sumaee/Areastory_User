@@ -2,7 +2,7 @@ package com.areastory.user.service.Impl;
 
 import com.areastory.user.db.entity.Follow;
 import com.areastory.user.db.entity.FollowId;
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.db.repository.FollowRepository;
 import com.areastory.user.db.repository.UserRepository;
 import com.areastory.user.dto.response.FollowerPageResp;
@@ -101,8 +101,8 @@ public class FollowServiceImpl implements FollowService {
         FollowId followId = new FollowId(userId, followingId);
         if (followRepository.existsById(followId))
             return false;
-        User user = userRepository.findById(userId).orElseThrow();
-        User followingUser = userRepository.findById(followingId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
+        UserInfo followingUser = userRepository.findById(followingId).orElseThrow();
 
         Follow follow = followRepository.save(Follow.follow(user, followingUser));
 
@@ -136,8 +136,8 @@ public class FollowServiceImpl implements FollowService {
             return false;
         Follow follow = followOptional.get();
         followRepository.delete(follow);
-        User user = follow.getFollowingUser();
-        User otherUser = follow.getFollowerUser();
+        UserInfo user = follow.getFollowingUser();
+        UserInfo otherUser = follow.getFollowerUser();
         user.deleteFollow();
         otherUser.deleteFollowing();
         followProducer.send(follow, KafkaProperties.DELETE);

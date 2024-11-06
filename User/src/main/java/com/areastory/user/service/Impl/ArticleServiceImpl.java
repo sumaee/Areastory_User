@@ -1,7 +1,7 @@
 package com.areastory.user.service.Impl;
 
 import com.areastory.user.db.entity.Article;
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.db.repository.ArticleRepository;
 import com.areastory.user.db.repository.UserRepository;
 import com.areastory.user.dto.common.ArticleKafkaDto;
@@ -21,7 +21,7 @@ ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     public void addArticle(ArticleKafkaDto articleKafkaDto) {
-        User user = userRepository.findById(articleKafkaDto.getUserId()).orElseThrow();
+        UserInfo user = userRepository.findById(articleKafkaDto.getUserId()).orElseThrow();
         Article article = Article.builder()
                 .articleId(articleKafkaDto.getArticleId())
                 .content(articleKafkaDto.getContent())

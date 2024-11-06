@@ -15,7 +15,7 @@ import javax.persistence.*;
 @ToString
 @DynamicInsert
 @Table(indexes = @Index(name = "idx_provider_id", columnList = "provider_id"))
-public class User {
+public class UserInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class User {
     @Setter
     private String registrationToken;
 
-    public User(String nickname, String profile, String provider, Long providerId, String registrationToken) {
+    public UserInfo(String nickname, String profile, String provider, Long providerId, String registrationToken) {
         this.nickname = nickname;
         this.profile = profile;
         this.provider = provider;

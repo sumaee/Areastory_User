@@ -7,11 +7,10 @@ spring:
   #    password:
   #    driver-class-name: org.h2.Driver
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: k8a302
-    #    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/areastory
-    url: jdbc:mysql://3.34.239.211:3306/areastory
-    password: ssafy12!
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    url: ${DB_URL}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -29,7 +28,7 @@ cloud:
     s3:
       bucket: areastory-user
     credentials:
-      access-key: 
+      access-key:
       secret-key:
     region:
       static: ap-northeast-2

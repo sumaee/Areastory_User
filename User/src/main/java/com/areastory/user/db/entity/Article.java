@@ -30,12 +30,12 @@ public class Article {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private UserInfo user;
     private LocalDateTime createdAt;
     @Setter
     private Boolean publicYn;
 
-    public Article(String content, LocalDateTime createdAt, String image, User user, boolean publicYn) {
+    public Article(String content, LocalDateTime createdAt, String image, UserInfo user, boolean publicYn) {
         this.content = content;
         this.createdAt = createdAt;
         this.image = image;

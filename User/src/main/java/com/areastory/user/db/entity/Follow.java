@@ -23,15 +23,15 @@ public class Follow extends BaseTime implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User followerUser;
+    private UserInfo followerUser;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User followingUser;
+    private UserInfo followingUser;
 
-    public static Follow follow(User followerUser, User followingUser) {
+    public static Follow follow(UserInfo followerUser, UserInfo followingUser) {
         return Follow.builder()
                 .followerUser(followerUser)
                 .followingUser(followingUser)

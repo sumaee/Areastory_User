@@ -2,7 +2,7 @@ package com.areastory.user.service.Impl;
 
 import com.areastory.user.db.entity.Report;
 import com.areastory.user.db.entity.ReportId;
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.db.repository.ArticleRepository;
 import com.areastory.user.db.repository.ReportRepository;
 import com.areastory.user.db.repository.UserRepository;
@@ -52,14 +52,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void validateUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         user.setValid();
 //        emitters.getValid(userId);
     }
 
     @Override
     public Boolean findUser(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
+        UserInfo user = userRepository.findById(userId).orElse(null);
 //        log.info("User found: " + user);
         return user != null;
     }
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResp login(Long providerId, String registrationToken) {
-        User findUser = userRepository.findByProviderId(providerId).orElse(null);
+        UserInfo findUser = userRepository.findByProviderId(providerId).orElse(null);
         if (findUser == null) {
             return UserResp.fromEntity(false);
         }
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserSignUpResp signUp(UserReq userReq, MultipartFile profile) throws IOException, NoSuchAlgorithmException {
-        User user = userRepository.save(UserReq.toEntity(userReq, s3Util.saveUploadFile(profile), sha256Util.sha256(userReq.getProviderId()), userReq.getRegistrationToken()));
+        UserInfo user = userRepository.save(UserReq.toEntity(userReq, s3Util.saveUploadFile(profile), sha256Util.sha256(userReq.getProviderId()), userReq.getRegistrationToken()));
         userProducer.send(user, KafkaProperties.INSERT);
         return UserSignUpResp.fromEntity(user);
     }
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserInfo(Long userId, UserInfoReq userInfoReq, MultipartFile profile) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         s3Util.deleteFile(user.getProfile());
         user.setNickname(userInfoReq.getNickname());
         String changedProfile = s3Util.saveUploadFile(profile);
@@ -100,14 +100,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResp getMyDetail(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         return UserResp.fromEntity(user);
     }
 
     @Override
     @Transactional
     public void updateUserNickName(Long userId, String nickname) {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         user.setNickname(nickname);
         userProducer.send(user, KafkaProperties.UPDATE);
     }
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateProfile(Long userId, MultipartFile profile) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         s3Util.deleteFile(user.getProfile());
         String changedProfile = s3Util.saveUploadFile(profile);
         user.setProfile(changedProfile);
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         s3Util.deleteFile(user.getProfile());
         userRepository.delete(user);
         userProducer.send(user, KafkaProperties.DELETE);
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ArticleResp getArticleList(Long userId, int page) {
         Pageable pageable = PageRequest.of(page, 100, Sort.Direction.DESC, "createdAt");
-        User user = userRepository.findById(userId).orElseThrow();
+        UserInfo user = userRepository.findById(userId).orElseThrow();
         Page<ArticleDto> articleDtos = articleRepository.findByUser(user, pageable)
                 .map(ArticleDto::fromEntity);
         return ArticleResp.fromArticleDto(articleDtos);
@@ -175,8 +175,8 @@ public class UserServiceImpl implements UserService {
         if (reportRepository.existsById(reportId))
             return false;
 
-        User reportUser = userRepository.findById(reportReq.getReportUserId()).orElseThrow();
-        User targetUser = userRepository.findById(reportReq.getTargetUserId()).orElseThrow();
+        UserInfo reportUser = userRepository.findById(reportReq.getReportUserId()).orElseThrow();
+        UserInfo targetUser = userRepository.findById(reportReq.getTargetUserId()).orElseThrow();
         reportRepository.save(Report.report(reportUser, targetUser, reportReq.getReportContent()));
         return true;
     }

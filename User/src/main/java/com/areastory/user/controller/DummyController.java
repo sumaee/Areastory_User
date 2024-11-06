@@ -1,7 +1,7 @@
 package com.areastory.user.controller;
 
 import com.areastory.user.db.entity.Follow;
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.db.repository.FollowRepository;
 import com.areastory.user.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class DummyController {
     @PostMapping("/user/dummy")
     public ResponseEntity<?> dummyUser() {
         for (int i = 1; i < 101; i++) {
-            User user = new User(String.valueOf(i), "https://areastory-user.s3.ap-northeast-2.amazonaws.com/profile/acf029b1-129f-4344-aa40-e7fd8ec9c475.jpg", "kakao", 2756369011L, "aaa");
+            UserInfo user = new UserInfo(String.valueOf(i), "https://areastory-user.s3.ap-northeast-2.amazonaws.com/profile/acf029b1-129f-4344-aa40-e7fd8ec9c475.jpg", "kakao", 2756369011L, "aaa");
             userRepository.save(user);
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -30,8 +30,8 @@ public class DummyController {
     @PostMapping("/follow/dummy")
     public ResponseEntity<?> dummyFollow() {
         for (int i = 5; i < 101; i++) {
-            User followerUser = userRepository.findById(Long.valueOf(i)).orElseThrow();
-            User followingUser = userRepository.findById(2L).orElseThrow();
+            UserInfo followerUser = userRepository.findById(Long.valueOf(i)).orElseThrow();
+            UserInfo followingUser = userRepository.findById(2L).orElseThrow();
             followRepository.save(Follow.follow(followerUser, followingUser));
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -40,8 +40,8 @@ public class DummyController {
     @PostMapping("/following/dummy")
     public ResponseEntity<?> dummyFollowing() {
         for (int i = 5; i < 105; i++) {
-            User followingUser = userRepository.findById(Long.valueOf(i)).orElseThrow();
-            User followerUser = userRepository.findById(2L).orElseThrow();
+            UserInfo followingUser = userRepository.findById(Long.valueOf(i)).orElseThrow();
+            UserInfo followerUser = userRepository.findById(2L).orElseThrow();
             followRepository.save(Follow.follow(followerUser, followingUser));
         }
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,6 +1,6 @@
 package com.areastory.user.dto.request;
 
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +16,8 @@ public class UserReq {
     private Long providerId; // 소셜 로그인 아이디
     private String registrationToken;
 
-    public static User toEntity(UserReq userReq, String profile, String hashKey, String registrationToken) {
-        return User.builder()
+    public static UserInfo toEntity(UserReq userReq, String profile, String hashKey, String registrationToken) {
+        return UserInfo.builder()
                 .nickname(userReq.getNickname())
                 .profile(profile)
                 .provider(userReq.getProvider())

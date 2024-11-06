@@ -1,6 +1,6 @@
 package com.areastory.user.kafka;
 
-import com.areastory.user.db.entity.User;
+import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.db.repository.UserRepository;
 import com.areastory.user.dto.common.NotificationDto;
 import com.areastory.user.dto.common.NotificationKafkaDto;
@@ -59,7 +59,7 @@ public class NotificationListener {
                 .build();
         notificationService.addNotification(notificationDto);
         //원래 여기 쓰면 안되는데 일단 리팩토링 전에 씀
-        User user = userRepository.findById(notificationKafkaDto.getUserId()).orElseThrow();
+        UserInfo user = userRepository.findById(notificationKafkaDto.getUserId()).orElseThrow();
         String registrationToken = user.getRegistrationToken();
         //상현
 //        String registrationToken = "czYC8DJERUS2C6nwrqG_N8:APA91bH00MoGdSrmkVdcv0GTiGesWzlSrRtbw5k7xfPg3SPR1FSqeELXFGaQSgf_oUaH4EMJkbmkfkcfeVCvsPTnkTQkz6M21ecdj4Tr35pzeMWOO2O51OwDv0W3hNaxvL4FL7rcIDPX";

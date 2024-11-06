@@ -21,17 +21,17 @@ public class Report extends BaseTime implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User reportUser;
+    private UserInfo reportUser;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User targetUser;
+    private UserInfo targetUser;
     @Column(name = "report_content")
     private String reportContent;
 
-    public static Report report(User reportUser, User targetUser, String reportContent) {
+    public static Report report(UserInfo reportUser, UserInfo targetUser, String reportContent) {
         return Report.builder()
                 .reportUser(reportUser)
                 .targetUser(targetUser)
