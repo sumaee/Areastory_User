@@ -24,7 +24,7 @@ import java.util.List;
 
 import static com.areastory.user.db.entity.QArticle.*;
 import static com.areastory.user.db.entity.QFollow.*;
-import static com.areastory.user.db.entity.QUser.*;
+import static com.areastory.user.db.entity.QUserInfo.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,12 +41,12 @@ public class UserRepositorySupportImpl implements UserRepositorySupport {
 
         return queryFactory
                 .select(Projections.constructor(UserDetailResp.class,
-                        user.userId,
-                        user.nickname,
-                        user.profile,
+                        userInfo.userId,
+                        userInfo.nickname,
+                        userInfo.profile,
                         ExpressionUtils.count(article.articleId),
-                        user.followCount,
-                        user.followingCount,
+                        userInfo.followCount,
+                        userInfo.followingCount,
                         ExpressionUtils.as(
                                 JPAExpressions.selectOne()
                                         .from(follow)
@@ -54,20 +54,20 @@ public class UserRepositorySupportImpl implements UserRepositorySupport {
                                         .exists(),
                                 "followYn"
                         )))
-                .from(user)
+                .from(userInfo)
                 .leftJoin(article)
                 .on(article.user.userId.eq(userId))
-                .where(user.userId.eq(userId))
+                .where(userInfo.userId.eq(userId))
                 .fetchOne();
     }
 
     @Override
     public void updateUserInfo(Long userId, UserInfoReq userInfoReq, String saveUploadFile) {
         queryFactory
-                .update(user)
-                .set(user.nickname, userInfoReq.getNickname())
-                .set(user.profile, saveUploadFile)
-                .where(user.userId.eq(userId))
+                .update(userInfo)
+                .set(userInfo.nickname, userInfoReq.getNickname())
+                .set(userInfo.profile, saveUploadFile)
+                .where(userInfo.userId.eq(userId))
                 .execute();
     }
 
@@ -88,13 +88,13 @@ public class UserRepositorySupportImpl implements UserRepositorySupport {
 
         List<FollowerResp> notFollowerList = queryFactory
                 .select(Projections.constructor(FollowerResp.class,
-                        user.userId,
-                        user.nickname,
-                        user.profile,
+                        userInfo.userId,
+                        userInfo.nickname,
+                        userInfo.profile,
                         Expressions.constant(false)))
-                .from(user)
-                .where(user.userId.notIn(getFollowingUserId(userId)), user.userId.ne(userId), user.nickname.like(search))
-                .orderBy(user.nickname.asc())
+                .from(userInfo)
+                .where(userInfo.userId.notIn(getFollowingUserId(userId)), userInfo.userId.ne(userId), userInfo.nickname.like(search))
+                .orderBy(userInfo.nickname.asc())
                 .fetch();
 
         searchList.addAll(followerList);
@@ -102,8 +102,8 @@ public class UserRepositorySupportImpl implements UserRepositorySupport {
 
 
         JPAQuery<Long> searchSize = queryFactory
-                .select(user.count())
-                .from(user);
+                .select(userInfo.count())
+                .from(userInfo);
 
         int offset = (int) pageable.getOffset();
         int limit = pageable.getPageSize();
