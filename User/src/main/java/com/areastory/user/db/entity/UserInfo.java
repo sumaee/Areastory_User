@@ -34,7 +34,7 @@ public class UserInfo {
     private Long followCount; // 팔로우 수
     @ColumnDefault("0")
     private Long followingCount; // 팔로잉 수
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     private Boolean isValid;
     private String hashKey;
     @Setter
