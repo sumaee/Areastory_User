@@ -1,6 +1,7 @@
 package com.areastory.user.config;
 
-import com.areastory.user.kafka.KafkaProperties;
+import com.areastory.user.config.properties.KafkaProperties;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,11 +13,14 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
+@RequiredArgsConstructor
 public class KafkaConfig {
+    private final KafkaProperties kafkaProperties;
+
     @Bean
     public KafkaAdmin admin() {
         Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaProperties.KAFKA_URL);
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getKafkaUrl());
         return new KafkaAdmin(configs);
     }
 }

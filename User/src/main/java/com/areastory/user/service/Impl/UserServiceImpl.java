@@ -1,5 +1,6 @@
 package com.areastory.user.service.Impl;
 
+import com.areastory.user.config.properties.KafkaProperties;
 import com.areastory.user.db.entity.Report;
 import com.areastory.user.db.entity.ReportId;
 import com.areastory.user.db.entity.UserInfo;
@@ -11,7 +12,6 @@ import com.areastory.user.dto.request.ReportReq;
 import com.areastory.user.dto.request.UserInfoReq;
 import com.areastory.user.dto.request.UserReq;
 import com.areastory.user.dto.response.*;
-import com.areastory.user.kafka.KafkaProperties;
 import com.areastory.user.kafka.UserProducer;
 import com.areastory.user.service.UserService;
 import com.areastory.user.util.S3Util;
@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -40,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final S3Util s3Util;
     private final UserProducer userProducer;
     private final Sha256Util sha256Util;
+    private final KafkaProperties kafkaProperties;
 
     public String searchCondition(String search) {
         if (search == null || search.isEmpty()) {
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserSignUpResp signUp(UserReq userReq, MultipartFile profile) throws IOException, NoSuchAlgorithmException {
         UserInfo user = userRepository.save(UserReq.toEntity(userReq, s3Util.saveUploadFile(profile), sha256Util.sha256(userReq.getProviderId()), userReq.getRegistrationToken()));
-        userProducer.send(user, KafkaProperties.INSERT);
+        userProducer.send(user, kafkaProperties.getCommand().getInsert());
         return UserSignUpResp.fromEntity(user);
     }
 
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
         user.setNickname(userInfoReq.getNickname());
         String changedProfile = s3Util.saveUploadFile(profile);
         user.setProfile(changedProfile);
-        userProducer.send(user, KafkaProperties.UPDATE);
+        userProducer.send(user, kafkaProperties.getCommand().getUpdate());
     }
 
     @Override
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserNickName(Long userId, String nickname) {
         UserInfo user = userRepository.findById(userId).orElseThrow();
         user.setNickname(nickname);
-        userProducer.send(user, KafkaProperties.UPDATE);
+        userProducer.send(user, kafkaProperties.getCommand().getUpdate());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
         s3Util.deleteFile(user.getProfile());
         String changedProfile = s3Util.saveUploadFile(profile);
         user.setProfile(changedProfile);
-        userProducer.send(user, KafkaProperties.UPDATE);
+        userProducer.send(user, kafkaProperties.getCommand().getUpdate());
     }
 
     @Override
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         UserInfo user = userRepository.findById(userId).orElseThrow();
         s3Util.deleteFile(user.getProfile());
         userRepository.delete(user);
-        userProducer.send(user, KafkaProperties.DELETE);
+        userProducer.send(user, kafkaProperties.getCommand().getDelete());
     }
 
 //    @Override

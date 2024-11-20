@@ -1,5 +1,6 @@
 package com.areastory.user.kafka;
 
+import com.areastory.user.config.properties.KafkaProperties;
 import com.areastory.user.db.entity.UserInfo;
 import com.areastory.user.dto.common.UserKafkaDto;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserProducer {
+    private final KafkaProperties kafkaProperties;
     private final KafkaTemplate<Long, UserKafkaDto> userTemplate;
 
     public void send(UserInfo user, String type) {
@@ -22,6 +24,6 @@ public class UserProducer {
                 .providerId(user.getProviderId())
                 .build();
         System.out.println(userKafkaDto);
-        userTemplate.send(new ProducerRecord<>(KafkaProperties.TOPIC_USER, userKafkaDto.getUserId(), userKafkaDto));
+        userTemplate.send(new ProducerRecord<>(kafkaProperties.getTopic().getUser(), userKafkaDto.getUserId(), userKafkaDto));
     }
 }

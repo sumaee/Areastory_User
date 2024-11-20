@@ -1,5 +1,6 @@
 package com.areastory.user.service.Impl;
 
+import com.areastory.user.config.properties.KafkaProperties;
 import com.areastory.user.db.entity.Follow;
 import com.areastory.user.db.entity.FollowId;
 import com.areastory.user.db.entity.UserInfo;
@@ -10,7 +11,6 @@ import com.areastory.user.dto.response.FollowerResp;
 import com.areastory.user.dto.response.FollowingPageResp;
 import com.areastory.user.dto.response.FollowingResp;
 import com.areastory.user.kafka.FollowProducer;
-import com.areastory.user.kafka.KafkaProperties;
 import com.areastory.user.kafka.NotificationProducer;
 import com.areastory.user.kafka.UserProducer;
 import com.areastory.user.service.FollowService;
@@ -35,6 +35,7 @@ public class FollowServiceImpl implements FollowService {
     private final UserProducer userProducer;
     private final FollowProducer followProducer;
     private final NotificationProducer notificationProducer;
+    private final KafkaProperties kafkaProperties;
 
     public String searchCondition(String search) {
         if (search == null || search.isEmpty()) {
@@ -110,9 +111,9 @@ public class FollowServiceImpl implements FollowService {
         followingUser.addFollow();
 
         notificationProducer.send(follow);
-        followProducer.send(follow, KafkaProperties.INSERT);
-        userProducer.send(user, KafkaProperties.UPDATE);
-        userProducer.send(followingUser, KafkaProperties.UPDATE);
+        followProducer.send(follow, kafkaProperties.getCommand().getInsert());
+        userProducer.send(user, kafkaProperties.getCommand().getUpdate());
+        userProducer.send(followingUser, kafkaProperties.getCommand().getUpdate());
         return true;
     }
 
@@ -140,9 +141,9 @@ public class FollowServiceImpl implements FollowService {
         UserInfo otherUser = follow.getFollowerUser();
         user.deleteFollow();
         otherUser.deleteFollowing();
-        followProducer.send(follow, KafkaProperties.DELETE);
-        userProducer.send(user, KafkaProperties.UPDATE);
-        userProducer.send(otherUser, KafkaProperties.UPDATE);
+        followProducer.send(follow, kafkaProperties.getCommand().getDelete());
+        userProducer.send(user, kafkaProperties.getCommand().getUpdate());
+        userProducer.send(otherUser, kafkaProperties.getCommand().getUpdate());
         return true;
     }
 }

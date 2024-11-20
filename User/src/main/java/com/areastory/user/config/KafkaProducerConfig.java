@@ -1,9 +1,10 @@
 package com.areastory.user.config;
 
+import com.areastory.user.config.properties.KafkaProperties;
 import com.areastory.user.dto.common.FollowKafkaDto;
 import com.areastory.user.dto.common.NotificationKafkaDto;
 import com.areastory.user.dto.common.UserKafkaDto;
-import com.areastory.user.kafka.KafkaProperties;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -18,7 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 public class KafkaProducerConfig {
+    private final KafkaProperties kafkaProperties;
+
     @Bean
     public ProducerFactory<Long, FollowKafkaDto> followProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
@@ -52,20 +56,18 @@ public class KafkaProducerConfig {
     @Bean
     public Map<String, Object> notificationProducerConfigs() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaProperties.KAFKA_URL);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getKafkaUrl());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        // See https://kafka.apache.org/documentation/#producerconfigs for more properties
         return props;
     }
 
     @Bean
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaProperties.KAFKA_URL);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getKafkaUrl());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        // See https://kafka.apache.org/documentation/#producerconfigs for more properties
         return props;
     }
 }

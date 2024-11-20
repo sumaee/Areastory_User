@@ -1,5 +1,6 @@
 package com.areastory.user.kafka;
 
+import com.areastory.user.config.properties.KafkaProperties;
 import com.areastory.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -8,9 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserReplyListener {
+    private final KafkaProperties kafkaProperties;
     private final UserService userService;
 
-    @KafkaListener(id = KafkaProperties.GROUP_NAME_USER_REPLY, topics = KafkaProperties.USER_REPLY, containerFactory = "userReplyContainerFactory")
+    @KafkaListener(id = "${kafka.group.user-reply}", topics = "${kafka.type.user-reply}", containerFactory = "userReplyContainerFactory")
     public void articleListen(Long userId) {
         try {
             Thread.sleep(2000);
